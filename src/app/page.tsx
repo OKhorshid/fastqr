@@ -1,11 +1,9 @@
 import Image from "next/image";
-import { FormEvent, useState } from 'react'
+import { FormEvent } from 'react'
 import { put } from "@vercel/blob";
 
 
 export default function Home() {
-const [name, setName] = useState('');
-  const [file, setFile] = useState<File | null>(null);
 
   const handleSubmit = async (event: FormEvent) => {
    alert("submitted, file not recieved by server throw...")
