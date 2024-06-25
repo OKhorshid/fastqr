@@ -1,8 +1,9 @@
 'use client';
  
-import type { PutBlobResult } from '@vercel/blob';
-import { useState, useRef } from 'react';
- 
+import Loading from "@/components/loading";
+import type { PutBlobResult } from "@vercel/blob";
+import { useState, useRef, Suspense } from "react";
+
 export default function AvatarUploadPage() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
@@ -61,9 +62,14 @@ export default function AvatarUploadPage() {
         <div className="my-3 text-green-400 font-bold">{message}</div>
       )}
       {blob && (
-        <div>
-          Blob url: <a href={blob.url}>{blob.url}</a>
-        </div>
+        <Suspense fallback={<Loading />}>
+          <div>
+            Blob url:{" "}
+            <a href={blob.url} target="_blank">
+              {blob.url}
+            </a>
+          </div>
+        </Suspense>
       )}
     </>
   );
