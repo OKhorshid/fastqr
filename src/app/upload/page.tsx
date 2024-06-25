@@ -10,36 +10,69 @@ export default function AvatarUploadPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!inputFileRef.current?.files) {
-      throw new Error("No file selected");
+      setMessage("No file selected");
+      return;
     }
 
     setIsLoading(true); // Disable the button by setting isLoading to true
     const file = inputFileRef.current.files[0];
 
-    try {
-      const response = await fetch(`/api/upload?filename=${file.name}`, {
-        method: "POST",
-        body: file,
+    fetch(`/api/upload?filename=${file.name}`, {
+      method: "POST",
+      body: file,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to upload");
+        }
+        return response.json();
+      })
+      .then((newBlob: PutBlobResult) => {
+        setBlob(newBlob);
+        setMessage("Upload successful");
+      })
+      .catch((error) => {
+        setMessage("Failed to upload: " + error.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-
-      if (!response.ok) {
-        setMessage("Failed to upload");
-        throw new Error("Failed to upload");
-      }
-
-      const newBlob = (await response.json()) as PutBlobResult;
-      setBlob(newBlob);
-    } catch (error) {
-      setMessage("Failed to upload");
-    } finally {
-      setIsLoading(false); // Re-enable the button by setting isLoading to false
-      setMessage("upload successful");
-    }
   };
+
+  // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+
+  //   if (!inputFileRef.current?.files) {
+  //     throw new Error("No file selected");
+  //   }
+
+  //   setIsLoading(true); // Disable the button by setting isLoading to true
+  //   const file = inputFileRef.current.files[0];
+
+  //   try {
+  //     const response = await fetch(`/api/upload?filename=${file.name}`, {
+  //       method: "POST",
+  //       body: file,
+  //     });
+
+  //     if (!response.ok) {
+  //       setMessage("Failed to upload");
+  //       throw new Error("Failed to upload");
+  //     }
+
+  //     const newBlob = (await response.json()) as PutBlobResult;
+  //     setBlob(newBlob);
+  //   } catch (error) {
+  //     setMessage("Failed to upload");
+  //   } finally {
+  //     setIsLoading(false); // Re-enable the button by setting isLoading to false
+  //     setMessage("upload successful");
+  //   }
+  // };
   return (
     <>
       <h1>Upload Your File</h1>
@@ -61,15 +94,15 @@ export default function AvatarUploadPage() {
       {message && (
         <div className="my-3 text-green-400 font-bold">{message}</div>
       )}
+
+      {isLoading && <Loading />}
       {blob && (
-        <Suspense fallback={<Loading />}>
-          <div>
-            Blob url:{" "}
-            <a href={blob.url} target="_blank">
-              {blob.url}
-            </a>
-          </div>
-        </Suspense>
+        <div>
+          Blob url:{" "}
+          <a href={blob.url} target="_blank">
+            {blob.url}
+          </a>
+        </div>
       )}
     </>
   );
