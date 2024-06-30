@@ -2,14 +2,20 @@
  
 import Loading from "@/components/loading";
 import type { PutBlobResult } from "@vercel/blob";
-import { useState, useRef, Suspense } from "react";
+import Script from "next/script";
+import { useState, useRef, Suspense, use } from "react";
+import QRCode from "react-qr-code";
 
 export default function AvatarUploadPage() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
-
+  const [qrReady, setQrState] = useState(false);
+  const [value, setValue] = useState();
+  const [back, setBack] = useState("#FFFFFF");
+  const [fore, setFore] = useState("#000000");
+  const [size, setSize] = useState(256);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -41,6 +47,10 @@ export default function AvatarUploadPage() {
     }
   };
 
+  const generateQr = () => {
+    setQrState(true);
+  };
+
   return (
     <>
       <h1>Upload Your File</h1>
@@ -70,6 +80,24 @@ export default function AvatarUploadPage() {
           <a href={blob.url} target="_blank">
             {blob.url}
           </a>
+          <button
+            className={`ml-5 border-2 p-2 ${
+              isLoading
+                ? "bg-purple-950 border-slate-500"
+                : "bg-green-600 border-white"
+            }`}
+            onClick={() => setQrState(true)}
+          >
+            Generate QR Code
+          </button>
+          {qrReady && (
+            <QRCode
+              value={blob.url}
+              bgColor={back}
+              fgColor={fore}
+              size={size}
+            />
+          )}
         </div>
       )}
     </>
