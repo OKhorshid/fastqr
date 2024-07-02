@@ -14,3 +14,9 @@ const auth = new Lucia(prismaAdapter, {
     },
   },
 });
+
+declare module "lucia" {
+  interface Register {
+    Lucia: typeof Lucia;
+  }
+}
