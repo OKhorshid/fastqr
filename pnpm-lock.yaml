@@ -8,6 +8,12 @@ dependencies:
   '@lucia-auth/adapter-prisma':
     specifier: ^4.0.1
     version: 4.0.1(@prisma/client@5.16.1)(lucia@3.2.0)
+  '@lucia-auth/adapter-sqlite':
+    specifier: ^3.0.1
+    version: 3.0.1(lucia@3.2.0)
+  '@lucia-auth/oauth':
+    specifier: ^3.5.3
+    version: 3.5.3(lucia@3.2.0)
   '@vercel/blob':
     specifier: ^0.23.3
     version: 0.23.3
@@ -198,6 +204,29 @@ packages:
       lucia: 3.x
     dependencies:
       '@prisma/client': 5.16.1(prisma@5.16.1)
+      lucia: 3.2.0
+    dev: false
+
+  /@lucia-auth/adapter-sqlite@3.0.1(lucia@3.2.0):
+    resolution: {integrity: sha512-bzr8+HALrbiYMb/+oL1SAnjbgFqlPs/Kj4lO57t/VvbXzmbpQEKk5Nv6hMpvWSkGAR9LbxYeQAtecikpKZVB0w==}
+    peerDependencies:
+      '@libsql/client': ^0.3.0
+      better-sqlite3: 8.x - 9.x
+      lucia: 3.x
+    peerDependenciesMeta:
+      '@libsql/client':
+        optional: true
+      better-sqlite3:
+        optional: true
+    dependencies:
+      lucia: 3.2.0
+    dev: false
+
+  /@lucia-auth/oauth@3.5.3(lucia@3.2.0):
+    resolution: {integrity: sha512-3blBldenf2zXsSJTZUwzB+NxI+0KJljfMHT0WR7hyLNwi4Ijss7F2cQqk2xW1lGH3lzdmsV93ZsY9Yv8ekBRUw==}
+    peerDependencies:
+      lucia: ^2.0.0
+    dependencies:
       lucia: 3.2.0
     dev: false
 

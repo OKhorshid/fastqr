@@ -1,7 +1,7 @@
 // src/app/api/createUser.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "../../../lib/prismaClient"; // Ensure the path is correct
+import { prismaClient } from "../../../lib/prismaClient"; // Ensure the path is correct
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -11,7 +11,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     const userId = uuidv4();
-    const user = await prisma.user.create({
+    const user = await prismaClient.user.create({
       data: {
         id: userId,
       },
