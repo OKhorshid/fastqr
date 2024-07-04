@@ -25,7 +25,7 @@ const CreateUserButton: React.FC = () => {
 
   const redirectToSign = async () => {
     try {
-      const response = await fetch("/login/google/callback", {
+      const response = await fetch("/api/login", {
         method: "GET",
       });
     } catch (e) {

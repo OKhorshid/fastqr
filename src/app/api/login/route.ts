@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export const GET = async (): Promise<NextResponse> => {
+  "use server";
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
   try {
@@ -15,21 +16,21 @@ export const GET = async (): Promise<NextResponse> => {
     NextResponse.redirect(url.href);
     const response = NextResponse.redirect(url.toString());
 
-    // store state verifier as cookie
-    cookies().set("state", state, {
-      secure: true, // set to false in localhost
-      path: "/",
-      httpOnly: true,
-      maxAge: 60 * 10, // 10 min
-    });
+    // // store state verifier as cookie
+    // cookies().set("state", state, {
+    //   secure: true, // set to false in localhost
+    //   path: "/",
+    //   httpOnly: true,
+    //   maxAge: 60 * 10, // 10 min
+    // });
 
-    // store code verifier as cookie
-    cookies().set("code_verifier", codeVerifier, {
-      secure: true, // set to false in localhost
-      path: "/",
-      httpOnly: true,
-      maxAge: 60 * 10, // 10 min
-    });
+    // // store code verifier as cookie
+    // cookies().set("code_verifier", codeVerifier, {
+    //   secure: true, // set to false in localhost
+    //   path: "/",
+    //   httpOnly: true,
+    //   maxAge: 60 * 10, // 10 min
+    // });
 
     return response;
   } catch (e) {
