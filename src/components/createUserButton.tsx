@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import React from "react";
 
 const CreateUserButton: React.FC = () => {
@@ -22,9 +23,19 @@ const CreateUserButton: React.FC = () => {
     }
   };
 
+  const redirectToSign = async () => {
+    try {
+      const response = await fetch("/login/google/callback", {
+        method: "GET",
+      });
+    } catch (e) {
+      console.log("erroorrrr: ", e);
+    }
+  };
+
   return (
     <button
-      onClick={handleCreateUser}
+      onClick={() => redirectToSign()}
       className="border-2 border-red-300 rounded-lg bg-slate-700 p-2"
     >
       Signup with Google
