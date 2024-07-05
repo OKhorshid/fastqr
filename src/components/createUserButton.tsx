@@ -1,5 +1,6 @@
-import { redirect } from "next/navigation";
+"use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 const CreateUserButton: React.FC = () => {
   const handleCreateUser = async () => {
@@ -23,13 +24,26 @@ const CreateUserButton: React.FC = () => {
     }
   };
 
+  const router = useRouter();
   const redirectToSign = async () => {
+    "use client";
     try {
       const response = await fetch("/api/login", {
         method: "GET",
       });
-    } catch (e) {
-      console.log("erroorrrr: ", e);
+      console.log("done");
+
+      if (response) {
+        try {
+          const url = await response.text();
+          console.log("redirecting to: ", url);
+          window.location.href = url;
+        } catch {
+          console.log("data not gottennn...");
+        }
+      }
+    } catch (e: any) {
+      console.error("status error: ", e.message);
     }
   };
 
