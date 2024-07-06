@@ -26,7 +26,11 @@ const luciaAuth = new Lucia(prismaAdapter, {
 });
 const clientID: string = process.env.CLIENT_ID ?? "";
 const clientSecret: string = process.env.CLIENT_SECRET ?? "";
-export const google = new Google(clientID, clientSecret, "/api/login");
+export const google = new Google(
+  clientID,
+  clientSecret,
+  "http://localhost:3000/"
+);
 
 declare module "lucia" {
   interface Register {
