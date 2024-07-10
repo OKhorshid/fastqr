@@ -19,7 +19,7 @@ export const GET = async (): Promise<NextResponse> => {
     const response = new NextResponse(url.toJSON());
 
     // store state verifier as cookie
-    cookies().set("state", state, {
+    response.cookies.set("state", state, {
       secure: true, // set to false in localhost
       path: "/",
       httpOnly: true,
@@ -27,7 +27,7 @@ export const GET = async (): Promise<NextResponse> => {
     });
 
     // store code verifier as cookie
-    cookies().set("code_verifier", codeVerifier, {
+    response.cookies.set("code_verifier", codeVerifier, {
       secure: true, // set to false in localhost
       path: "/",
       httpOnly: true,

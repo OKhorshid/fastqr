@@ -8,7 +8,7 @@ import { Lucia } from "lucia";
 import { prismaAdapter } from "./prismaClient";
 import { Google } from "arctic";
 
-const luciaAuth = new Lucia(prismaAdapter, {
+export const luciaAuth = new Lucia(prismaAdapter, {
   sessionCookie: {
     // this sets cookies with super long expiration
     // since Next.js doesn't allow Lucia to extend cookie expiration when rendering pages
