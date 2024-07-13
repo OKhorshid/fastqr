@@ -19,7 +19,7 @@ export const GET = async (): Promise<NextResponse> => {
     const response = new NextResponse(url.toJSON());
 
     // store state verifier as cookie
-    response.cookies.set("state", state, {
+    response.cookies.set("google_oauth_state", state, {
       secure: true, // set to false in localhost
       path: "/",
       httpOnly: true,
@@ -33,6 +33,7 @@ export const GET = async (): Promise<NextResponse> => {
       httpOnly: true,
       maxAge: 60 * 10, // 10 min
     });
+
     response.headers;
     return response;
   } catch (e) {

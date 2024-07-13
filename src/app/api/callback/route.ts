@@ -27,20 +27,18 @@ interface googleIdToken {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const url = new URL(request.url);
+  const url = new URL(request.headers.get("url") ?? "");
   const authCode = url.searchParams.get("code");
   const state = url.searchParams.get("state");
   const storedState = cookies().get("google_oauth_state")?.value ?? null;
   const codeVerifier = cookies().get("code_verifier")?.value ?? null;
-  if (
-    !authCode ||
-    !state ||
-    !storedState ||
-    state !== storedState ||
-    !codeVerifier
-  ) {
+  if (!authCode || !state || !storedState || !codeVerifier) {
     return new Response(null, {
-      status: 400,
+      status: 599,
+    });
+  } else if (state !== storedState) {
+    return new Response(null, {
+      status: 598,
     });
   }
 
@@ -74,7 +72,7 @@ export async function GET(request: Request): Promise<Response> {
 
       existingUser = newUser;
     }
-
+    console.log(existingUser);
     const response = new NextResponse();
 
     const session = await luciaAuth.createSession(existingUser.id, {});
