@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const CreateUserButton: React.FC = () => {
@@ -37,24 +37,6 @@ const CreateUserButton: React.FC = () => {
           const url = await response.text();
           console.log("redirecting to: ", url);
           window.location.href = url;
-
-          window.document.addEventListener("load", () => {
-            // Function to parse the URL query parameters
-            function getQueryParam(name: string) {
-              const urlParams = new URLSearchParams(window.location.search);
-              return urlParams.get(name);
-            }
-            console.log("aaaaaaaaaa");
-            // Check if the expected token or code is in the URL
-            const authUrl = getQueryParam(url);
-            if (authUrl) {
-              console.log("Auth code received:", authUrl);
-              // Optionally, perform some client-side logic here
-              performCallbackFetch(authUrl);
-            } else {
-              console.error("No auth code found in the URL.");
-            }
-          });
         } catch {
           console.log("data not gottennn...");
         }
@@ -64,12 +46,27 @@ const CreateUserButton: React.FC = () => {
     }
   };
 
+  //event listener for the functions to run on component load
+  useEffect(() => {
+    // Function to parse the URL query parameters as to be used to check if authcode exists in href
+    function getQueryParam(name: string) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Check if the expected token or code is in the URL
+    const authUrl = getQueryParam("code");
+    if (authUrl) {
+      performCallbackFetch(window.location.href);
+    }
+  }, []);
+
   async function performCallbackFetch(authUrl: string) {
-    console.log("wasalnaa");
+    const myHeaders = new Headers();
+    myHeaders.append("url", authUrl);
+
     try {
-      const myHeaders = new Headers();
-      myHeaders.append("url", authUrl);
-      const callbackRes = await fetch("/callback", {
+      const callbackRes = await fetch("/api/callback", {
         headers: myHeaders,
       });
 
@@ -77,8 +74,6 @@ const CreateUserButton: React.FC = () => {
         const data = await callbackRes.json();
         console.log("Callback data received:", data);
         // Process the login, perhaps redirecting to a dashboard or home page
-      } else {
-        throw new Error("Callback fetch failed");
       }
     } catch (error: any) {
       console.error("Error during callback fetch:", error.message);
