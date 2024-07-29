@@ -1,7 +1,7 @@
 // app/login/google/callback/route.ts
 import { google, luciaAuth } from "@/lib/auth";
 import { cookies } from "next/headers";
-import { OAuth2RequestError } from "arctic";
+import { GoogleTokens, OAuth2RequestError } from "arctic";
 import { generateIdFromEntropySize } from "lucia";
 import { prismaClient } from "@/lib/prismaClient";
 import { NextResponse } from "next/server";
@@ -27,11 +27,12 @@ interface googleIdToken {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const url = new URL(request.headers.get("url") ?? "");
+  const url = new URL(request.headers.get("url") ?? "", "localhost:3000");
   const authCode = url.searchParams.get("code");
   const state = url.searchParams.get("state");
   const storedState = cookies().get("google_oauth_state")?.value ?? null;
   const codeVerifier = cookies().get("code_verifier")?.value ?? null;
+  //console.log("CB URL:", url);
   if (!authCode || !state || !storedState || !codeVerifier) {
     return new Response(null, {
       status: 599,
@@ -41,29 +42,49 @@ export async function GET(request: Request): Promise<Response> {
       status: 598,
     });
   }
-
   try {
-    const tokens = await google.validateAuthorizationCode(
-      authCode,
-      codeVerifier
-    );
-    const googleUserResponse = await fetch("https://api.google.com/user", {
-      headers: {
-        Authorization: `Bearer ${tokens.accessToken}`,
-      },
-    });
-    const googleUser: googleUser = await googleUserResponse.json();
+    let tokens: GoogleTokens;
+    let googleUserResponse: Response;
+    let googleUser: googleUser;
+    try {
+      tokens = await google.validateAuthorizationCode(authCode, codeVerifier);
+    } catch (error) {
+      console.error(
+        "Error validating authorization code:",
+        error,
+        (error as Error).message,
+        (error as Error).cause
+      );
+      // Handle or rethrow the error
+    }
+    try {
+      googleUserResponse = await fetch(
+        "https://www.googleapis.com/auth/userinfo.email",
+        {
+          headers: {
+            Authorization: `Bearer ${tokens!.accessToken}`,
+          },
+        }
+      );
+    } catch (e) {
+      console.log("errror fel GUR");
+    }
+    try {
+      if (googleUserResponse!) googleUser = await googleUserResponse.json();
+    } catch (e) {
+      console.log("errror fel GU");
+    }
 
     let existingUser = await prismaClient.user.findFirst({
       where: {
-        id: googleUser.id,
+        id: googleUser!.id,
       },
     });
 
     if (!existingUser) {
       const newUser = await prismaClient.user.create({
         data: {
-          id: googleUser.id,
+          id: googleUser!.id,
         },
         select: {
           id: true,
@@ -88,8 +109,10 @@ export async function GET(request: Request): Promise<Response> {
     // the specific error message depends on the provider
     if (e instanceof OAuth2RequestError) {
       // invalid code
+      console.log(e.message, "==>", e.description);
       return new Response(null, {
         status: 400,
+        statusText: e.message,
       });
     }
     return new Response(null, {

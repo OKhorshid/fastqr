@@ -15,7 +15,7 @@ export const GET = async (): Promise<NextResponse> => {
     //const tokens: GoogleTokens = await google.validateAuthorizationCode(code, codeVerifier);
     //const tokens: GoogleRefreshedTokens = await google.refreshAccessToken(refreshToken);
 
-    console.log("urllll: ", url.href);
+    //console.log("urllll: ", url.href);
     const response = new NextResponse(url.toJSON());
 
     // store state verifier as cookie
