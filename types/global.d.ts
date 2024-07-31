@@ -11,7 +11,7 @@ export interface googlePosition {
 export interface GoogleMapsLoaderProps {
   apiKey: string;
   version?: string; // Optional prop for specifying the API version
-  loco?: JSON;
+  loco?: googlePosition;
 }
 // Extending the Window interface to include initMap
 declare global {
